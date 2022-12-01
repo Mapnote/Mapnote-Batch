@@ -25,20 +25,14 @@ public class ScheduleQuartzJob extends QuartzJobBean {
 
   private final Job job;
   private final JobLauncher jobLauncher;
-  private final SchedulesRepository schedulesRepository;
 
   @Override
   protected void executeInternal(JobExecutionContext context) {
-    schedulesRepository.save(new Schedules("newScuedule", AlarmStatus.CRY));
-    schedulesRepository.save(new Schedules("newScuedule", AlarmStatus.CRY));
-    schedulesRepository.save(new Schedules("newScuedule", AlarmStatus.CRY));
-    schedulesRepository.save(new Schedules("newScuedule", AlarmStatus.CRY));
-    schedulesRepository.save(new Schedules("newScuedule", AlarmStatus.CRY));
     try {
       jobLauncher.run(
           job,
           new JobParametersBuilder()
-              .addString("Date",
+              .addString("executedAt",
                   LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
               .toJobParameters()
       );

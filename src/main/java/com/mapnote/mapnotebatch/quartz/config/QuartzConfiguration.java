@@ -23,17 +23,7 @@ public class QuartzConfiguration {
   public CronTriggerFactoryBean trigger(JobDetail job){
     CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
     trigger.setJobDetail(job);
-    trigger.setCronExpression("5 * * * * ?");
+    trigger.setCronExpression("1/30 * * * * ?");
     return trigger;
   }
-
-  //Spring Boot 기반에서 Quartz를 실행하면 Scheduler는 자동으로 빈으로 등록하고 trigger와 job을 주입받아 실행시켜준다.
-//  @Bean
-//  public SchedulerFactoryBean scheduler(Trigger trigger, JobDetail job) {
-//    SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
-//
-//    schedulerFactory.setJobDetails(job);
-//    schedulerFactory.setTriggers(trigger);
-//    return schedulerFactory;
-//  }
 }

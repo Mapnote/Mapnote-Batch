@@ -3,7 +3,6 @@ package com.mapnote.mapnotebatch.batch.job;
 import com.mapnote.mapnotebatch.domain.schedule.entity.AlarmStatus;
 import com.mapnote.mapnotebatch.domain.schedule.entity.ScheduleStatus;
 import com.mapnote.mapnotebatch.domain.schedule.entity.Schedules;
-import java.util.HashMap;
 import javax.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 public class ScheduleBatchJob {
   private static final String selectQuery = "SELECT s FROM Schedules s WHERE s.isDeleted = :isDeleted AND s.scheduleStatus = :scheduleStatus AND s.alarmStatus = :alarmStatus";
 
-  private static final int chunkSize = 10;
+  private static final int CHUNK_SIZE = 10;
 
   private final JobBuilderFactory jobBuilderFactory;
   private final StepBuilderFactory stepBuilderFactory;
@@ -40,10 +39,9 @@ public class ScheduleBatchJob {
   }
 
   @Bean
-  @JobScope
   public Step jpaCursorItemReaderStep() {
     return stepBuilderFactory.get("jpaCursorItemReaderStep")
-        .<Schedules, Schedules>chunk(chunkSize)
+        .<Schedules, Schedules>chunk(CHUNK_SIZE)
         .reader(jpaCursorItemReader())
         .processor(jpaItemProcessor())
         .writer(jpaCursorItemWriter())
@@ -51,7 +49,6 @@ public class ScheduleBatchJob {
   }
 
   @Bean
-  @StepScope
   public JpaCursorItemReader<Schedules> jpaCursorItemReader() {
     log.info("jpaCursorItemReader");
 //    HashMap<String, Object> parameterValues = new HashMap<>();
@@ -70,14 +67,15 @@ public class ScheduleBatchJob {
   @Bean
   public ItemProcessor<Schedules, Schedules> jpaItemProcessor() {
     return schedule -> {
+      AlarmStatus beforeAlarmStatus = schedule.getAlarmStatus();
       schedule.toggleAlarm();
-      log.info("after schedule.getAlarmStatus() = " + schedule.getAlarmStatus());
+      log.info("Schedule id {}'s alarm status is changed. before: {} / after: {}", schedule.getId(), beforeAlarmStatus, schedule.getAlarmStatus());
       return schedule;
     };
   }
 
-  @StepScope
-  private JpaItemWriter<Schedules> jpaCursorItemWriter() {
+  @Bean
+  public JpaItemWriter<Schedules> jpaCursorItemWriter() {
     JpaItemWriter<Schedules> jpaItemWriter = new JpaItemWriter<>();
     jpaItemWriter.setEntityManagerFactory(entityManagerFactory);
     return jpaItemWriter;
