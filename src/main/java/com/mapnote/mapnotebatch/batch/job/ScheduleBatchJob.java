@@ -24,12 +24,13 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Configuration
 public class ScheduleBatchJob {
+  private static final String selectQuery = "SELECT s FROM Schedules s WHERE s.isDeleted = :isDeleted AND s.scheduleStatus = :scheduleStatus AND s.alarmStatus = :alarmStatus";
+
+  private static final int chunkSize = 10;
 
   private final JobBuilderFactory jobBuilderFactory;
   private final StepBuilderFactory stepBuilderFactory;
   private final EntityManagerFactory entityManagerFactory;
-
-  private static final int chunkSize = 10;
 
   @Bean
   public Job jpaCursorItemReaderJob() {
@@ -53,23 +54,22 @@ public class ScheduleBatchJob {
   @StepScope
   public JpaCursorItemReader<Schedules> jpaCursorItemReader() {
     log.info("jpaCursorItemReader");
-    HashMap<String, Object> parameterValues = new HashMap<>();
-    parameterValues.put("isDeleted", Boolean.FALSE);
-    parameterValues.put("scheduleStatus", ScheduleStatus.ONGOING);
-    parameterValues.put("alarmStatus", AlarmStatus.CRY);
+//    HashMap<String, Object> parameterValues = new HashMap<>();
+//    parameterValues.put("isDeleted", Boolean.FALSE);
+//    parameterValues.put("scheduleStatus", ScheduleStatus.ONGOING);
+//    parameterValues.put("alarmStatus", AlarmStatus.CRY);
     return new JpaCursorItemReaderBuilder<Schedules>()
         .name("jpaCursorItemReader")
         .entityManagerFactory(entityManagerFactory)
         .queryString(
-            "SELECT s FROM Schedules s WHERE s.isDeleted = :isDeleted AND s.scheduleStatus = :scheduleStatus AND s.alarmStatus = :alarmStatus")
-        .parameterValues(parameterValues)
+            "SELECT s FROM Schedules s")
+//        .parameterValues(parameterValues)
         .build();
   }
 
   @Bean
   public ItemProcessor<Schedules, Schedules> jpaItemProcessor() {
     return schedule -> {
-      log.info("before schedule.getAlarmStatus() = " + schedule.getAlarmStatus());
       schedule.toggleAlarm();
       log.info("after schedule.getAlarmStatus() = " + schedule.getAlarmStatus());
       return schedule;
