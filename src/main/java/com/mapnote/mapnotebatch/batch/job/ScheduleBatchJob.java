@@ -3,15 +3,15 @@ package com.mapnote.mapnotebatch.batch.job;
 import com.mapnote.mapnotebatch.domain.schedule.entity.AlarmStatus;
 import com.mapnote.mapnotebatch.domain.schedule.entity.ScheduleStatus;
 import com.mapnote.mapnotebatch.domain.schedule.entity.Schedules;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JpaCursorItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Configuration
 public class ScheduleBatchJob {
-  private static final String selectQuery = "SELECT s FROM Schedules s WHERE s.isDeleted = :isDeleted AND s.scheduleStatus = :scheduleStatus AND s.alarmStatus = :alarmStatus";
+  private static final String SELECT_QUERY = "SELECT s FROM Schedules s WHERE s.isDeleted = :isDeleted AND s.scheduleStatus = :scheduleStatus AND s.alarmStatus = :alarmStatus";
 
   private static final int CHUNK_SIZE = 10;
 
@@ -50,17 +50,16 @@ public class ScheduleBatchJob {
 
   @Bean
   public JpaCursorItemReader<Schedules> jpaCursorItemReader() {
-    log.info("jpaCursorItemReader");
-//    HashMap<String, Object> parameterValues = new HashMap<>();
-//    parameterValues.put("isDeleted", Boolean.FALSE);
-//    parameterValues.put("scheduleStatus", ScheduleStatus.ONGOING);
-//    parameterValues.put("alarmStatus", AlarmStatus.CRY);
+    Map<String, Object> parameterValues = new HashMap<>();
+    parameterValues.put("isDeleted", Boolean.FALSE);
+    parameterValues.put("scheduleStatus", ScheduleStatus.ONGOING);
+    parameterValues.put("alarmStatus", AlarmStatus.CRY);
     return new JpaCursorItemReaderBuilder<Schedules>()
         .name("jpaCursorItemReader")
         .entityManagerFactory(entityManagerFactory)
         .queryString(
-            "SELECT s FROM Schedules s")
-//        .parameterValues(parameterValues)
+            SELECT_QUERY)
+        .parameterValues(parameterValues)
         .build();
   }
 

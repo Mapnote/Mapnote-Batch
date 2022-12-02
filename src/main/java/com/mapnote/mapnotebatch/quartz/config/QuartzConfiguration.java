@@ -23,7 +23,7 @@ public class QuartzConfiguration {
   public CronTriggerFactoryBean trigger(JobDetail job){
     CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
     trigger.setJobDetail(job);
-    trigger.setCronExpression("1/30 * * * * ?");
+    trigger.setCronExpression("0 0/1 * * * ?");
     return trigger;
   }
 }
