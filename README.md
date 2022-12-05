@@ -1,10 +1,10 @@
-## 💫 Mapnote  BE Repository 입니다 💫
+## ⌚ Mapnote  Batch Repository 입니다
 
 ## 프로젝트 개요
 
 ### ⌛️ 프로젝트 기간
 
-`2022/10/7` ~ `2022/10/31`
+`2022/10/23` ~ `2022/12/5`
 
 ### 🛠 프로젝트 구조
 
@@ -31,11 +31,12 @@
 ![Jira](https://img.shields.io/badge/-Jira-0052CC?style=plastic&logo=JiraSoftware&logoColor=white)
 ![Notion](https://img.shields.io/badge/-Notion-000000?style=plastic&logo=Notion&logoColor=white)
 
-## 개선 사항
-- 스케줄러와 배치 작업의 lifecycle 이해 필요
-- 현재 해피 케이스에 대한 구현만 완성된 상태. 개선 필요
-
-### Code Convention
+### 📃 Code Convention
 
 - 코드 스타일
     - google code style
+
+
+### 💻 개선 사항
+- 스케줄러와 배치 작업의 lifecycle 이해 필요
+- 현재 해피 케이스에 대한 구현만 완성된 상태. 개선 필요
